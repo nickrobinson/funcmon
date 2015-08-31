@@ -1,10 +1,7 @@
 package funcmon
 
 import (
-	"fmt"
-	"log"
 	"time"
-	"github.com/influxdb/influxdb/client"
 )
 
 //Config is used to specify what server to connect to.
@@ -18,13 +15,16 @@ type Config struct {
 }
 
 func NewConfig() Config {
-	return Config
+	return Config{
+		Port: 8086,
+	}
 }
 
 type Client struct {
 	host string
 	port int
 	db string
+	metricMap map[string]time.Time
 }
 
 func NewClient(c Config) (*Client, error) {
@@ -38,16 +38,16 @@ func NewClient(c Config) (*Client, error) {
 }
 
 // Start a timer for the function name provided.
-func startMonitoring(key string) {
-
+func (c *Client) startMonitoring(key string) {
+	c.metricMap[key] = time.Now()
 }
 
 // End the timer for the provided key and add the time metric to 
 // the batch
-func endMonitoring(key string) {
+func (c *Client) endMonitoring(key string) {
 
 }
 
-func flushMetrics() {
+func (c *Client) flushMetrics() {
 
 }
