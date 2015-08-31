@@ -1,7 +1,12 @@
 package funcmon
 
 import (
+	"net/url"
+	"fmt"
+	"log"
+	"os"
 	"time"
+	"github.com/influxdb/influxdb/client"
 )
 
 //Config is used to specify what server to connect to.
@@ -25,16 +30,35 @@ type Client struct {
 	port int
 	db string
 	metricMap map[string]time.Time
+	influxClient *client.Client
 }
 
 func NewClient(c Config) (*Client, error) {
-	client := Client{
+	monClient := Client{
 		host: c.Host,
 		port: c.Port,
 		db: c.DB,
 	}
 
-	return &client,nil
+	u, err := url.Parse(fmt.Sprintf("http://%s:%d", monClient.host, monClient.port))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	conf := client.Config{
+		URL:      *u,
+		Username: os.Getenv("INFLUX_USER"),
+		Password: os.Getenv("INFLUX_PWD"),
+	}
+
+	con, err := client.NewClient(conf)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	monClient.influxClient = con
+
+	return &monClient,nil
 }
 
 // Start a timer for the function name provided.
@@ -45,7 +69,7 @@ func (c *Client) startMonitoring(key string) {
 // End the timer for the provided key and add the time metric to 
 // the batch
 func (c *Client) endMonitoring(key string) {
-
+	
 }
 
 func (c *Client) flushMetrics() {
