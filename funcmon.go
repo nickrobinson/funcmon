@@ -69,7 +69,7 @@ func (c *Client) startMonitoring(key string) {
 // End the timer for the provided key and add the time metric to 
 // the batch
 func (c *Client) endMonitoring(key string) {
-	
+	fmt.Printf("The call took %v to run.\n", time.Now().Sub(c.metricMap[key]))
 }
 
 func (c *Client) flushMetrics() {
