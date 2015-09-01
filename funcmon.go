@@ -62,13 +62,13 @@ func NewClient(c Config) (*Client, error) {
 }
 
 // Start a timer for the function name provided.
-func (c *Client) startMonitoring(key string) {
+func (c *Client) StartMonitoring(key string) {
 	c.metricMap[key] = time.Now()
 }
 
 // End the timer for the provided key and add the time metric to 
 // the batch
-func (c *Client) endMonitoring(key string) {
+func (c *Client) EndMonitoring(key string) {
 	fmt.Printf("The call took %v to run.\n", time.Now().Sub(c.metricMap[key]))
 }
 
