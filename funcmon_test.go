@@ -4,7 +4,6 @@ import (
 	"testing"
 	"github.com/stretchr/testify/assert"
 	"github.com/nickrobinson/funcmon"
-
 )
 
 func TestStub(t *testing.T) {
@@ -28,4 +27,15 @@ func TestNewClient(t *testing.T) {
 	assert.Nil(t, err, "Error is not nil")
 	assert.NotNil(t, client, "Client is not initialized")
 	
+}
+
+func TestStartMonitoring(t *testing.T) {
+	config := funcmon.Config{
+		Host: "127.0.0.1",
+		Port: 8086,
+		DB: "funcmon",
+	}
+	client,err := funcmon.NewClient(config)
+	client.StartMonitoring("test")
+	assert.Nil(t, err, "Error is not nil")
 }

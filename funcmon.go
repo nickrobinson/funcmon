@@ -38,6 +38,7 @@ func NewClient(c Config) (*Client, error) {
 		host: c.Host,
 		port: c.Port,
 		db: c.DB,
+		metricMap: make(map[string]time.Time),
 	}
 
 	u, err := url.Parse(fmt.Sprintf("http://%s:%d", monClient.host, monClient.port))
@@ -68,7 +69,7 @@ func (c *Client) StartMonitoring(key string) {
 
 // End the timer for the provided key and add the time metric to 
 // the batch
-func (c *Client) EndMonitoring(key string) {
+func (c *Client) StopMonitoring(key string) {
 	fmt.Printf("The call took %v to run.\n", time.Now().Sub(c.metricMap[key]))
 }
 
