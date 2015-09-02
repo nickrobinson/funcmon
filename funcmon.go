@@ -25,7 +25,7 @@ func NewConfig() Config {
 	}
 }
 
-type Client struct {
+type MonitorInfo struct {
 	host string
 	port int
 	db string
@@ -33,8 +33,8 @@ type Client struct {
 	influxClient *client.Client
 }
 
-func NewClient(c Config) (*Client, error) {
-	monClient := Client{
+func NewClient(c Config) (*MonitorInfo, error) {
+	monClient := MonitorInfo{
 		host: c.Host,
 		port: c.Port,
 		db: c.DB,
@@ -63,16 +63,40 @@ func NewClient(c Config) (*Client, error) {
 }
 
 // Start a timer for the function name provided.
-func (c *Client) StartMonitoring(key string) {
+func (c *MonitorInfo) StartMonitoring(key string) {
 	c.metricMap[key] = time.Now()
 }
 
 // End the timer for the provided key and add the time metric to 
 // the batch
-func (c *Client) StopMonitoring(key string) {
+func (c *MonitorInfo) StopMonitoring(key string) {
+	var pts = make([]client.Point, 1)
+
+	pts[0] = client.Point {
+		Measurement: key,
+		Tags: map[string]string{
+			"type": "function",
+		},
+		Time: time.Now(),
+		Fields: map[string]interface{}{
+			"value": 123,
+		},
+	}
+
+	bps := client.BatchPoints{
+		Points: pts,
+		Database: c.db,
+		RetentionPolicy: "default",
+	}
+
+	_, err := c.influxClient.Write(bps)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	fmt.Printf("The call took %v to run.\n", time.Now().Sub(c.metricMap[key]))
 }
 
-func (c *Client) flushMetrics() {
+func (c *MonitorInfo) flushMetrics() {
 
 }
