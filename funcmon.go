@@ -79,7 +79,7 @@ func (c *MonitorInfo) StopMonitoring(key string) {
 		},
 		Time: time.Now(),
 		Fields: map[string]interface{}{
-			"value": 123,
+			"value": "123",
 		},
 	}
 
